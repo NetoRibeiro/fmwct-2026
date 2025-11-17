@@ -1,0 +1,5 @@
+{
+  "name": "FIFA World Cup 2026 Tracker",
+  "description": "A web application to track the FIFA World Cup 2026 tournament. View match schedules, get AI-powered highlights and stats, and place your predictions.",
+  "requestFramePermissions": []
+}
