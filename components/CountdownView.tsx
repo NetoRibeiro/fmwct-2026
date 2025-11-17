@@ -1,33 +1,77 @@
 import React, { useState, useEffect } from 'react';
 
-const calculateTimeLeft = (drawDate: Date) => {
-  const difference = +drawDate - +new Date();
-  let timeLeft = {
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  };
-
-  if (difference > 0) {
-    timeLeft = {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    };
-  }
-  return timeLeft;
-};
-
-const TimeBox: React.FC<{ value: number; label: string }> = ({ value, label }) => (
-    <div className="flex flex-col items-center justify-center bg-gray-800/50 rounded-lg p-4 md:p-6 w-24 h-24 md:w-32 md:h-32 backdrop-blur-sm">
-        <span className="text-4xl md:text-6xl font-bold text-green-400">{String(value).padStart(2, '0')}</span>
-        <span className="text-sm md:text-base text-gray-300 uppercase tracking-wider">{label}</span>
+const NorthAmericaMapBackground: React.FC = () => (
+    <div
+        className="absolute top-0 left-0 w-full h-full overflow-hidden z-0"
+        style={{
+            background: 'radial-gradient(ellipse at center, rgba(17, 24, 39, 0) 0%, rgba(17, 24, 39, 1) 75%)',
+        }}
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 975 890"
+            className="absolute top-0 left-0 w-full h-full object-contain opacity-20 animate-pulse"
+            preserveAspectRatio="xMidYMid meet"
+        >
+            <defs>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="10" result="coloredBlur" />
+                    <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            <g filter="url(#glow)">
+                {/* Canada */}
+                <path
+                    fill="#dc2626"
+                    d="M608.2,215.1c-1.1-1.6-1.5-3-1.5-3s-1.1,0-2.6-0.4c-1.1-0.4-1.9-0.4-1.9-0.4l-3,1.1l-1.9,1.9l-1.5,3.4l-0.4,3.7V226l0.4,2.6c0.4,1.9,0.7,3,1.1,3.4l1.5,0.7l2.2,0.4h1.9l2.2-0.7l2.2-1.5c0.7-0.7,1.1-1.9,1.1-3.4v-2.2c0-1.1-0.4-2.2-1.1-3.4C610.1,216.2,609.3,215.1,608.2,215.1z M650.5,234.3c-0.4,0-0.7,0-0.7,0.4c0,0.4,0.4,0.4,0.7,0.4c0.4,0,0.7,0,0.7-0.4C651.2,234.3,650.9,234.3,650.5,234.3z M631,250.1c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7c0.4,0,0.7-0.4,0.7-0.7C631.7,250.5,631.4,250.1,631,250.1z M628.4,258.4c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7c0.4,0,0.7-0.4,0.7-0.7C629.1,258.7,628.8,258.4,628.4,258.4z M618.6,260.6c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7s0.7-0.4,0.7-0.7C619.3,260.9,619,260.6,618.6,260.6z M596.1,262.1c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7c0.4,0,0.7-0.4,0.7-0.7C596.8,262.4,596.5,262.1,596.1,262.1z M593.1,262.4c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7c0.4,0,0.7-0.4,0.7-0.7C593.8,262.8,593.5,262.4,593.1,262.4z M586.8,266.4c-0.4,0-0.7,0.4-0.7,0.7c0,0.4,0.4,0.7,0.7,0.7c0.4,0,0.7-0.4,0.7-0.7C587.5,266.8,587.2,266.4,586.8,266.4z M214.5,419.5l-0.4,3.4l-1.1,3.4l-2.2,3.4l-3.4,2.6l-4.5,1.9l-3.7-1.1l-3.4-2.6l-2.6-4.1l-1.9-4.9l-0.7-3.7l0.4-2.6l1.1-2.2h1.9l2.2,0.4l2.6,1.5l3,2.2l3.4,2.2l3-0.4l2.6-1.5l1.9-2.2l0.7-3l-0.4-3.4l-1.5-2.6l-2.2-1.9h-2.6l-2.2-0.7l-1.5-1.5l-0.4-2.2v-2.2l0.7-1.9l1.9-1.5h2.2l1.9,0.7l1.1,1.5v1.5l-0.4,1.1l-1.1,0.7l-1.1,0.4l-0.7-0.4l-0.4-0.7l0.4-0.7l0.7-0.4h0.7l0.7,0.4l0.4,0.7v0.7l-0.7,0.7l-1.5,0.4l-1.9-0.4l-1.5-1.1l-0.7-1.9v-2.2l1.1-2.2l2.2-1.5h3l2.6,1.1l1.9,2.2l0.7,3.4v4.1l-1.1,3.4L214.5,419.5z M224.2,423.9l0.7,1.1l1.1,0.7h1.1l1.1-0.7l0.7-1.1l-0.4-1.1l-1.1-0.7h-1.1l-1.1,0.7L224.2,423.9z M228.6,424.3l-0.7,2.2l-1.9,3.7l-3,4.5l-4.1,4.5l-4.9,3.7l-5.3,2.2l-5.3,0.4l-4.9-1.5l-4.1-3l-3-4.1l-1.9-4.9l-0.4-5.3l1.1-4.9l2.6-4.1l4.1-3l4.9-1.9l5.3-0.4h5.3l4.5,1.9l3.7,3.4l2.2,4.5L228.6,424.3z M253.9,435.4l1.5,3.4l0.7,3.7l-0.4,3.7l-1.9,3.4l-3,2.6l-3.7,1.5l-4.1,0.4l-3.7-1.1l-3-2.2l-1.9-3.4l-0.7-3.7v-3.7l0.7-3.4l2.2-3l3.4-1.9l3.7-0.7h4.1l3.4,1.1l2.2,2.2L253.9,435.4z"
+                />
+                {/* USA */}
+                <path
+                    fill="#3b82f6"
+                    d="M480.9,343.8l-1.9,1.9l-1.9,2.2l-1.5,2.6l-1.1,2.6l-0.7,3l-0.4,3l0.4,2.6l0.7,2.2l1.5,1.9l1.9,1.1l2.2,0.7h2.2l1.9-0.7l1.9-1.5l1.1-1.9l0.7-2.2l0.4-2.6v-2.6l-0.4-2.2l-1.1-2.2l-1.9-1.5l-2.2-1.1H480.9z M500.5,357.7l-0.7,1.5l-1.1,1.1l-1.5,0.7l-1.5,0.4h-1.5l-1.5-0.4l-1.1-0.7l-0.7-1.1l-0.4-1.5v-1.5l0.4-1.1l0.7-1.1l1.1-0.7l1.5-0.4h1.5l1.5,0.4l1.1,0.7l0.7,1.1l0.4,1.1V357.7z M524.4,374.3l0.4,1.1l0.7,0.7l1.1,0.4h1.1l1.1-0.4l0.7-0.7l0.4-1.1v-1.1l-0.4-0.7l-0.7-0.7l-1.1-0.4h-1.1l-1.1,0.4l-0.7,0.7L524.4,374.3z M525.5,380.6l0.7,2.2l1.5,1.9l1.9,1.5l2.6,0.7l3,0.4h3l2.6-0.7l2.2-1.5l1.5-2.2l0.7-2.6v-2.6l-0.7-2.2l-1.9-1.9l-2.2-1.1l-2.6-0.7h-3l-2.6,0.7l-2.2,1.1l-1.5,1.9l-0.7,2.2V380.6z M539.1,397.6l1.1,0.7l1.1,0.4h1.1l1.1-0.4l1.1-0.7l0.7-1.1v-1.1l-0.7-1.1l-1.1-0.7h-1.1l-1.1,0.4l-1.1,0.7l-0.7,1.1V397.6z M551.9,409.8l0.4,0.7l0.7,0.4h0.7l0.7-0.4l0.4-0.7v-0.7l-0.4-0.7l-0.7-0.4h-0.7l-0.7,0.4L551.9,409.8z M553.4,412.8l1.1,1.5l1.5,1.1l1.9,0.7l2.2,0.4h2.2l1.9-0.4l1.5-1.1l1.1-1.5l0.7-1.9v-1.9l-0.7-1.9l-1.1-1.5l-1.9-1.1l-1.9-0.4h-2.2l-1.9,0.4l-1.9,1.1l-1.1,1.5l-0.7,1.9V412.8z M565.4,424.3l0.7,1.1l1.1,0.7h1.1l1.1-0.7l0.7-1.1v-1.1l-0.7-1.1l-1.1-0.7h-1.1l-1.1,0.7L565.4,424.3z M574.9,431.3l1.1,0.7l1.1,0.4h1.1l1.1-0.4l1.1-0.7l0.7-1.1l-0.4-1.1l-0.7-0.7l-1.1-0.4h-1.1l-1.1,0.4l-1.1,0.7L574.9,431.3z M590,436.5l1.1,1.1l1.5,0.7l1.5,0.4h1.5l1.5-0.4l1.5-0.7l1.1-1.1l0.4-1.5v-1.5l-0.4-1.5l-1.1-1.1l-1.5-0.7l-1.5-0.4h-1.5l-1.5,0.4l-1.5,0.7l-1.1,1.1l-0.4,1.5V436.5z M562.4,453.9l1.1,1.5l1.5,1.1l1.9,0.7l1.9,0.4h2.2l1.9-0.4l1.9-0.7l1.5-1.5l1.1-1.9v-1.9l-0.7-1.9l-1.1-1.5l-1.9-1.1l-1.9-0.4h-2.2l-1.9,0.4l-1.9,1.1l-1.5,1.5l-1.1,1.9V453.9z"
+                />
+                {/* Mexico */}
+                <path
+                    fill="#16a34a"
+                    d="M349.8,610.9l-1.1,1.9l-1.5,1.5l-1.5,1.1l-1.5,0.7l-1.9,0.4l-1.9,0.4l-1.5,0.4l-1.5,0.4l-1.5,0.4l-1.1,0.4l-1.1,0.4l-1.1,0.4l-1.1,0.7l-0.7,0.4l-0.7,0.4l-0.7,0.4l-0.7,0.4l-0.4,0.4l-0.4,0.4l-0.4,0.4l-0.4,0.4l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.4,0.7l-0.f"
+                />
+            </g>
+        </svg>
     </div>
 );
 
-export const CountdownView: React.FC<{ drawDate: Date }> = ({ drawDate }) => {
+// Fix: Add CountdownView component and export it.
+const TimeBlock: React.FC<{ value: number; label: string }> = ({ value, label }) => (
+    <div className="flex flex-col items-center justify-center bg-gray-800/50 p-4 md:p-6 rounded-lg backdrop-blur-sm">
+        <span className="text-4xl md:text-6xl font-bold text-green-400">{value.toString().padStart(2, '0')}</span>
+        <span className="text-sm md:text-base text-gray-300 uppercase tracking-widest">{label}</span>
+    </div>
+);
+
+interface CountdownViewProps {
+    drawDate: Date;
+}
+
+const calculateTimeLeft = (endDate: Date) => {
+    const difference = +new Date(endDate) - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+        timeLeft = {
+            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+            minutes: Math.floor((difference / 1000 / 60) % 60),
+            seconds: Math.floor((difference / 1000) % 60)
+        };
+    }
+
+    return timeLeft as { days: number, hours: number, minutes: number, seconds: number };
+};
+
+export const CountdownView: React.FC<CountdownViewProps> = ({ drawDate }) => {
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(drawDate));
 
     useEffect(() => {
@@ -38,30 +82,20 @@ export const CountdownView: React.FC<{ drawDate: Date }> = ({ drawDate }) => {
         return () => clearTimeout(timer);
     });
 
-    const hasTimeLeft = timeLeft.days > 0 || timeLeft.hours > 0 || timeLeft.minutes > 0 || timeLeft.seconds > 0;
-
     return (
-        <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4 text-center font-sans overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-10" style={{backgroundImage: "url('https://picsum.photos/seed/worldcupbg/1920/1080')"}}></div>
-            <div className="relative z-10">
-                <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 animate-fade-in-down">FIFA World Cup 2026™</h1>
-                <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-up">
-                    The Final Draw takes place in Washington DC on December 5, 2025.
-                    <br/>
-                    The countdown has begun!
-                </p>
-                <div className="flex justify-center items-center space-x-2 md:space-x-4">
-                    {hasTimeLeft ? (
-                        <>
-                            <TimeBox value={timeLeft.days} label="Days" />
-                            <TimeBox value={timeLeft.hours} label="Hours" />
-                            <TimeBox value={timeLeft.minutes} label="Minutes" />
-                            <TimeBox value={timeLeft.seconds} label="Seconds" />
-                        </>
-                    ) : (
-                        <span className="text-2xl text-green-400 font-bold">The draw is happening!</span>
-                    )}
+        <div className="relative min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white font-sans overflow-hidden">
+            <NorthAmericaMapBackground />
+            <div className="relative z-10 text-center p-4">
+                <h1 className="text-4xl md:text-6xl font-bold mb-2 tracking-tight">FIFA World Cup 2026</h1>
+                <h2 className="text-xl md:text-2xl text-green-400 mb-8">Group Stage Draw Countdown</h2>
+                <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-2xl mx-auto">
+                    {timeLeft.days !== undefined ? <TimeBlock value={timeLeft.days} label="Days" /> : <TimeBlock value={0} label="Days" />}
+                    {timeLeft.hours !== undefined ? <TimeBlock value={timeLeft.hours} label="Hours" /> : <TimeBlock value={0} label="Hours" />}
+                    {timeLeft.minutes !== undefined ? <TimeBlock value={timeLeft.minutes} label="Minutes" /> : <TimeBlock value={0} label="Minutes" />}
+                    {timeLeft.seconds !== undefined ? <TimeBlock value={timeLeft.seconds} label="Seconds" /> : <TimeBlock value={0} label="Seconds" />}
                 </div>
+                <p className="mt-8 text-gray-400 text-sm">The world will be watching. The groups will be set.</p>
+                <p className="text-gray-500 text-xs mt-2">December 5, 2025</p>
             </div>
         </div>
     );
